@@ -23,7 +23,7 @@ const checkAuthentication = async (jwt_token: string) => {
 export async function middleware(request: NextRequest) {
 	const jwt_token = request.cookies.get("jwt-token")?.value;
 	const url = request.nextUrl.clone();
-	const isLoginPage = url.pathname === "/login";
+	const isLoginPage = url.pathname === "/login" || url.pathname === "/register";
 
 	if (!jwt_token) {
 		if (isLoginPage) {

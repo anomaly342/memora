@@ -33,7 +33,9 @@ export default function LoginPage() {
 
 				<div className="text-center">
 					<p className="text-cool-grey-900">Don't have an account?</p>
-					<p className="text-blue-500 underline">Create an account</p>
+					<Link href={"/register"} className="text-blue-500 underline">
+						Create an account
+					</Link>
 				</div>
 			</div>
 		</div>
