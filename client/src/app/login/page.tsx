@@ -1,6 +1,6 @@
-import { FcGoogle } from "react-icons/fc";
 import montserrat from "@/fonts/Montserrat";
-
+import GoogleButton from "@/components/buttons/GoogleButton";
+import Link from "next/link";
 export default function LoginPage() {
 	return (
 		<div className="grid place-content-center h-full">
@@ -29,10 +29,8 @@ export default function LoginPage() {
 					</button>
 				</form>
 				<hr className="bg-cool-grey-200 w-80 mb-6" />
-				<button className="h-11 w-64 flex gap-3 items-center shadow-md p-2 mb-12">
-					<FcGoogle size={32}></FcGoogle>
-					<p className="text-cool-grey-700 text-sm">Sign in with Google</p>
-				</button>
+				<GoogleButton></GoogleButton>
+
 				<div className="text-center">
 					<p className="text-cool-grey-900">Don't have an account?</p>
 					<p className="text-blue-500 underline">Create an account</p>
