@@ -1,17 +1,13 @@
 "use client";
 
-import { SignUpSchema, SignUpSchemaType } from "@/types/form";
-import {
-	useForm,
-	UseFormRegister,
-	FieldValues,
-	FieldError,
-} from "react-hook-form";
+import { SignUpSchema, SignUpSchemaType } from "@/types/registrationForm";
+import { useForm, UseFormRegister, FieldError } from "react-hook-form";
+import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import montserrat from "@/fonts/Montserrat";
 import Link from "next/link";
-import { useEffect } from "react";
+
+const { SERVER_URL } = process.env;
 
 const LabeledInput = ({
 	label,
@@ -57,7 +53,25 @@ const Form = () => {
 		resolver: zodResolver(SignUpSchema),
 		mode: "onChange",
 	});
-	const onSubmit = (data) => console.log(data);
+	const router = useRouter();
+	const onSubmit = async (data: SignUpSchemaType) => {
+		try {
+			const response = await fetch(`${SERVER_URL}/auth/register`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
+
+			if (response.ok) {
+				router.push("/");
+			} else {
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<form
