@@ -1,62 +1,57 @@
 "use client";
 
-import { SignUpSchema, SignUpSchemaType } from "@/types/registrationForm";
-import { useForm, UseFormRegister, FieldError } from "react-hook-form";
-import { useRouter } from "next/router";
+import {
+	SignUpSchema,
+	SignUpSchemaType,
+} from "@/types/form/SignUpSchema.types";
+import { AuthResponse } from "@/types/form/FormResponse.types";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import montserrat from "@/fonts/Montserrat";
+
 import Link from "next/link";
+import LabeledInput from "@/components/inputs/LabeledInput";
+import WelcomeText from "@/components/misc/WelcomeText";
 
 const { SERVER_URL } = process.env;
 
-const LabeledInput = ({
-	label,
-	name,
-	type,
-	register,
-	error,
-}: {
-	label: string;
-	name: keyof SignUpSchemaType;
-	type: string;
-	register: UseFormRegister<SignUpSchemaType>;
-	error: FieldError | undefined;
-}) => {
+export default function RegisterPage() {
 	return (
-		<>
-			<label className="mb-1 text-base font-bold text-cool-grey-600">
-				{label}
-			</label>
-			<input
-				className={`h-11 w-64 border border-cool-grey-400 px-2 py-3 rounded-md focus:outline-2 outline-blue-500 ${
-					error
-						? "mb-1 border-red-500 "
-						: "mb-4 [&:not(:placeholder-shown)]:border-green-600"
-				}`}
-				type={type}
-				{...register(name)}
-				placeholder=" "
-				required
-			/>
-		</>
+		<div className="grid place-content-center h-full">
+			<div className="flex flex-col items-center">
+				<WelcomeText />
+				<Form></Form>
+				<hr className="bg-cool-grey-200 w-80 mb-6" />
+
+				<div className="text-center">
+					<p className="text-cool-grey-900">Have an account?</p>
+					<Link href={"/login"} className="text-blue-500 underline">
+						Log in now
+					</Link>
+				</div>
+			</div>
+		</div>
 	);
-};
+}
 
 const Form = () => {
 	const {
 		register,
 		handleSubmit,
-		watch,
-
-		formState: { errors },
+		formState: { errors, isValid, isSubmitting },
 	} = useForm<SignUpSchemaType>({
 		resolver: zodResolver(SignUpSchema),
 		mode: "onChange",
 	});
+
+	const [responseError, setResponseError] = useState<AuthResponse>(undefined);
+
 	const router = useRouter();
+
 	const onSubmit = async (data: SignUpSchemaType) => {
 		try {
-			const response = await fetch(`${SERVER_URL}/auth/register`, {
+			const response = await fetch(`${SERVER_URL}/authentication/register`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -67,6 +62,8 @@ const Form = () => {
 			if (response.ok) {
 				router.push("/");
 			} else {
+				const json: AuthResponse = await response.json();
+				setResponseError(json);
 			}
 		} catch (error) {
 			console.log(error);
@@ -116,36 +113,22 @@ const Form = () => {
 			)}
 			<button
 				type="submit"
-				className="h-11 w-64 bg-blue-vivid-400 text-cool-grey-050 text-xl font-bold rounded-sm mt-6"
+				className={`h-11 w-64 text-xl font-bold rounded-sm mt-6 ${
+					isValid && !isSubmitting
+						? "bg-blue-vivid-400 text-cool-grey-050"
+						: "bg-cool-grey-300 text-cool-grey-050 cursor-not-allowed"
+				}`}
+				disabled={!isValid || isSubmitting}
 			>
 				Sign up
 			</button>
+
+			{responseError &&
+				responseError.errors.map((e, i) => (
+					<p className="w-64 text-sm mb-2 text-red-500" key={i}>
+						{e}
+					</p>
+				))}
 		</form>
 	);
 };
-
-export default function RegisterPage() {
-	return (
-		<div className="grid place-content-center h-full">
-			<div className="flex flex-col items-center">
-				<div className="flex flex-col items-center mb-11">
-					<h2
-						className={`text-4xl mb-3 ${montserrat.className} text-cool-grey-900`}
-					>
-						Welcome to
-					</h2>
-					<h1 className="text-5xl text-blue-vivid-700 font-bold">Memora.io</h1>
-				</div>
-				<Form></Form>
-				<hr className="bg-cool-grey-200 w-80 mb-6" />
-
-				<div className="text-center">
-					<p className="text-cool-grey-900">Have an account?</p>
-					<Link href={"/login"} className="text-blue-500 underline">
-						Log in now
-					</Link>
-				</div>
-			</div>
-		</div>
-	);
-}
