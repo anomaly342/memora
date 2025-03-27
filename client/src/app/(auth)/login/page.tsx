@@ -11,7 +11,7 @@ import GoogleButton from "@/components/buttons/GoogleButton";
 import Link from "next/link";
 import WelcomeText from "@/components/misc/WelcomeText";
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const InputField = ({
 	label,
@@ -56,11 +56,15 @@ export default function LoginPage() {
 
 	const login = async (data: LoginSchemaType) => {
 		try {
-			const response = await fetch(`${SERVER_URL}/authentication/login`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			});
+			const response = await fetch(
+				`${NEXT_PUBLIC_SERVER_URL}/authentication/login`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(data),
+					credentials: "include",
+				}
+			);
 
 			if (response.ok) {
 				router.push("/");
@@ -97,7 +101,7 @@ export default function LoginPage() {
 
 				<button
 					type="submit"
-					className={`mt-4 h-11 w-64 text-xl font-bold rounded-sm ${
+					className={`mt-2 h-11 w-64 text-xl font-bold rounded-sm ${
 						isValid && !isSubmitting
 							? "bg-blue-vivid-400 text-cool-grey-050"
 							: "bg-cool-grey-300 text-cool-grey-050 cursor-not-allowed"
@@ -107,11 +111,11 @@ export default function LoginPage() {
 					Login
 				</button>
 
-				{responseError?.errors?.map((e, i) => (
-					<p key={i} className="w-64 text-sm text-red-500">
-						{e}
+				{responseError && (
+					<p className="w-64 mt-2 text-sm text-red-500">
+						{responseError.message}
 					</p>
-				))}
+				)}
 			</form>
 
 			<hr className="bg-cool-grey-200 w-80 mb-6" />

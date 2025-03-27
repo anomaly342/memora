@@ -2,11 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { patchNestJsSwagger } from 'nestjs-zod';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 patchNestJsSwagger();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(cookieParser());
+  app.enableCors({
+    origin: 'https://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
