@@ -13,6 +13,9 @@ export class Account {
 
   @Prop({ required: true })
   google_account: boolean;
+
+  @Prop()
+  google_id: string;
 }
 
 export const AccountSchema = SchemaFactory.createForClass(Account);

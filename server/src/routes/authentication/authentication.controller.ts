@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  Query,
   Res,
   UsePipes,
 } from '@nestjs/common';
@@ -24,6 +26,7 @@ import { Response } from 'express';
 
 @Controller('authentication')
 export class AuthenticationController {
+  CLIENT_URL = process.env.CLIENT_URL as string;
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('login')
@@ -72,5 +75,19 @@ export class AuthenticationController {
     const result = this.authenticationService.Check(JWTSchema);
 
     return result ? res.sendStatus(200) : res.sendStatus(401);
+  }
+
+  @Get('google')
+  async Google(@Query() queries: Record<string, string>, @Res() res: Response) {
+    console.log(queries);
+    const token = await this.authenticationService.Google(queries.code);
+
+    if (!token) {
+      throw new HttpException('', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    res.cookie('jwt-token', token, { sameSite: 'none', secure: true });
+
+    return res.redirect(this.CLIENT_URL);
   }
 }

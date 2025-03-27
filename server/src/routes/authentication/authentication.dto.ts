@@ -36,8 +36,14 @@ export const SignUpSchema = z
     path: ['confirm_password'],
   });
 
+export interface GoogleAccessTokenResponse {
+  access_token: string;
+  expires_in: number;
+  scope: string;
+  token_type: string;
+  id_token: string;
+}
 export const JWTSchema = z.object({ jwt_token: z.string() });
-
 export type JWTSchemaType = z.infer<typeof JWTSchema>;
 export type SignUpSchemaType = z.infer<typeof SignUpSchema>;
 export type DefaultLoginSchemaType = z.infer<typeof DefaultLoginSchema>;
