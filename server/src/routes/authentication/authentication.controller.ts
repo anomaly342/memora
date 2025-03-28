@@ -79,7 +79,6 @@ export class AuthenticationController {
 
   @Get('google')
   async Google(@Query() queries: Record<string, string>, @Res() res: Response) {
-    console.log(queries);
     const token = await this.authenticationService.Google(queries.code);
 
     if (!token) {
