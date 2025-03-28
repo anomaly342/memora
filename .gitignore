@@ -1,6 +1,8 @@
 server/dist
 client/.next
 client/certificates
+client/coverage
+
 **/.env
 **/node_modules
 .vscode

@@ -1,5 +1,6 @@
 export interface AuthErrorReponse {
-	errors: string[];
+	message: string;
+	statusCode: number;
 }
 
 export type AuthResponse = undefined | AuthErrorReponse;

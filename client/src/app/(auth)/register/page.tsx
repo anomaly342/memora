@@ -14,7 +14,7 @@ import Link from "next/link";
 import LabeledInput from "@/components/inputs/LabeledInput";
 import WelcomeText from "@/components/misc/WelcomeText";
 
-const { SERVER_URL } = process.env;
+const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 export default function RegisterPage() {
 	return (
@@ -51,13 +51,17 @@ const Form = () => {
 
 	const onSubmit = async (data: SignUpSchemaType) => {
 		try {
-			const response = await fetch(`${SERVER_URL}/authentication/register`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			});
+			const response = await fetch(
+				`${NEXT_PUBLIC_SERVER_URL}/authentication/register`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data),
+					credentials: "include",
+				}
+			);
 
 			if (response.ok) {
 				router.push("/");
@@ -83,9 +87,7 @@ const Form = () => {
 				register={register}
 			></LabeledInput>
 			{errors.username && (
-				<p className="w-64 text-sm mb-4 text-red-500">
-					{errors.username.message}
-				</p>
+				<p className="w-64 text-sm  text-red-500">{errors.username.message}</p>
 			)}
 			<LabeledInput
 				label="Password"
@@ -95,9 +97,7 @@ const Form = () => {
 				register={register}
 			></LabeledInput>
 			{errors.password && (
-				<p className="w-64 text-sm mb-4 text-red-500">
-					{errors.password.message}
-				</p>
+				<p className="w-64 text-sm text-red-500">{errors.password.message}</p>
 			)}
 			<LabeledInput
 				label="Confirm Password"
@@ -107,7 +107,7 @@ const Form = () => {
 				register={register}
 			></LabeledInput>
 			{errors.confirm_password && (
-				<p className="w-64 text-sm mb-4 text-red-500">
+				<p className="w-64 text-sm text-red-500">
 					{errors.confirm_password.message}
 				</p>
 			)}
@@ -123,12 +123,11 @@ const Form = () => {
 				Sign up
 			</button>
 
-			{responseError &&
-				responseError.errors.map((e, i) => (
-					<p className="w-64 text-sm mb-2 text-red-500" key={i}>
-						{e}
-					</p>
-				))}
+			{responseError && (
+				<p className="w-64 mt-2 text-sm text-red-500">
+					{responseError.message}
+				</p>
+			)}
 		</form>
 	);
 };
