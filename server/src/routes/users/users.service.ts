@@ -3,9 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Account } from 'src/schemas/account.schema';
 import { IdParams, UserReponse } from './users.dto';
+import { JwtPayload, verify } from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
+  PRIVATE_KEY = process.env.PRIVATE_KEY as string;
   constructor(
     @InjectModel(Account.name)
     private readonly accountModel: Model<Account>,
@@ -20,5 +22,10 @@ export class UsersService {
     } else {
       return null;
     }
+  }
+
+  GetOwnUserInfo(token: string): UserReponse {
+    const obj: JwtPayload = verify(token, this.PRIVATE_KEY) as JwtPayload;
+    return { name: obj.username as string };
   }
 }
