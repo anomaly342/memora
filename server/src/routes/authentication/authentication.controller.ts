@@ -45,7 +45,11 @@ export class AuthenticationController {
       );
     }
 
-    res.cookie('jwt-token', token, { sameSite: 'none', secure: true });
+    res.cookie('jwt-token', token, {
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 60800000,
+    });
 
     return res.sendStatus(200);
   }
@@ -63,7 +67,11 @@ export class AuthenticationController {
       );
     }
 
-    res.cookie('jwt-token', token, { sameSite: 'none', secure: true });
+    res.cookie('jwt-token', token, {
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 60800000,
+    });
 
     return res.sendStatus(200);
   }
@@ -85,7 +93,11 @@ export class AuthenticationController {
       throw new HttpException('', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    res.cookie('jwt-token', token, { sameSite: 'none', secure: true });
+    res.cookie('jwt-token', token, {
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 60800000,
+    });
 
     return res.redirect(this.CLIENT_URL);
   }
