@@ -5,7 +5,14 @@ export type AccountDocument = HydratedDocument<Account>;
 
 @Schema({})
 export class Account {
-  @Prop({ required: true, unique: true })
+  @Prop({
+    required: true,
+    unique: true,
+    collation: {
+      locale: 'en',
+      strength: 2,
+    },
+  })
   username: string;
 
   @Prop()

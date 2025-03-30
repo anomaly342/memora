@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationController } from './routes/authentication/authentication.controller';
 import { AppController } from './app.controller';
@@ -7,6 +7,9 @@ import { AuthenticationService } from './routes/authentication/authentication.se
 import { ConfigModule } from '@nestjs/config';
 
 import { Account, AccountSchema } from './schemas/account.schema';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { UsersService } from './routes/users/users.service';
+import { UsersController } from './routes/users/users.controller';
 
 @Module({
   imports: [
@@ -14,7 +17,14 @@ import { Account, AccountSchema } from './schemas/account.schema';
     MongooseModule.forRoot(process.env.DATABASE_STRING as string),
     MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
   ],
-  providers: [AppService, AuthenticationService],
-  controllers: [AppController, AuthenticationController],
+  providers: [AppService, AuthenticationService, UsersService],
+  controllers: [AppController, AuthenticationController, UsersController],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude('authentication/*path')
+      .forRoutes('*');
+  }
+}
