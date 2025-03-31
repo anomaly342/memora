@@ -11,7 +11,6 @@ export class AuthMiddleware implements NestMiddleware {
     }
     try {
       verify(jwtToken, this.PRIVATE_KEY);
-
       return next();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {

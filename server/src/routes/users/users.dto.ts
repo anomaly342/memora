@@ -2,6 +2,6 @@ export interface IdParams {
   id: string;
 }
 
-export interface UserReponse {
+export interface UserResponse {
   name: string;
 }
