@@ -11,5 +11,3 @@ export interface deckWithoutCards {
 	learn: number;
 	review: number;
 }
-
-export type decksWithoutCards = deckWithoutCards[];

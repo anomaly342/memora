@@ -2,12 +2,11 @@
 
 import { PiSquaresFour, PiListDashesBold } from "react-icons/pi";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
+
 import Skeleton from "react-loading-skeleton";
 import getDecksList from "@/utilities/fetch";
 import "react-loading-skeleton/dist/skeleton.css";
 import AddDeckModal from "@/components/inputs/AddDeckModal";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function LibraryPage() {
