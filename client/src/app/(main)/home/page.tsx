@@ -1,10 +1,28 @@
-import Image from "next/image";
+"use client";
+
+import { IoPersonOutline } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
 import bg from "@/assets/polygon_bg.png";
 import cover from "@/assets/sample_cover.webp";
 import Link from "next/link";
-import { IoPersonOutline } from "react-icons/io5";
+import getDecksList from "@/utilities/fetch";
 
 export default function HomePage() {
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ["deckList"],
+		queryFn: getDecksList,
+		staleTime: 1000 * 60 * 5,
+	});
+
+	const pending_cards = () => {
+		let count = 0;
+		data?.map((e) => {
+			count += e.learn + e.review + e.review;
+		});
+
+		return count;
+	};
+
 	return (
 		<main>
 			<div
@@ -12,7 +30,11 @@ export default function HomePage() {
 				style={{ backgroundImage: `url(${bg.src})` }}
 			>
 				<p className="text-white text-xl">
-					You have <span className="text-red-vivid-500">42</span> pending cards
+					You have{" "}
+					<span className="text-red-vivid-500">
+						{isLoading ? "..." : isError ? "null" : pending_cards()}
+					</span>{" "}
+					pending cards
 				</p>
 
 				<Link
@@ -36,14 +58,21 @@ export default function HomePage() {
 								Basic Geometric Formulas
 							</h3>
 							<p className="text-blue-vivid-400">
-								<Link href={"/tags/Math"}>Math</Link>,{" "}
-								<Link href={"/tags/Geometry"}>Geometry</Link>
+								<Link href={"/tags/Math"} className="text-sm">
+									Math
+								</Link>
+								,{" "}
+								<Link href={"/tags/Geometry"} className="text-sm">
+									Geometry
+								</Link>
 							</p>
 							<p className="text-cool-grey-800">223 cards</p>
 							<div className="flex items-center gap-1">
 								<IoPersonOutline className="size-4" />
 								<p className="text-blue-vivid-400">
-									<Link href={"/profiles/Kenn13123"}>@Kenn13123</Link>
+									<Link href={"/profiles/Kenn13123"} className="text-sm">
+										@Kenn13123
+									</Link>
 								</p>
 							</div>
 						</div>

@@ -1,5 +1,4 @@
 import Sidebar from "@/components/misc/Sidebar";
-import { cookies } from "next/headers";
 export default async function Layout({
 	children,
 }: Readonly<{
@@ -8,6 +7,7 @@ export default async function Layout({
 	return (
 		<>
 			<Sidebar></Sidebar>
+
 			{children}
 		</>
 	);
