@@ -57,6 +57,7 @@ export default function AddDeckModal({
 
 	const mutation = useMutation({
 		mutationFn: async (data: AddDeckSchemaType) => {
+			console.log("test");
 			const response = await fetch(
 				`${process.env.NEXT_PUBLIC_SERVER_URL}/decks`,
 				{

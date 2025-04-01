@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaType, SchemaTypes } from 'mongoose';
+import { HydratedDocument, SchemaTypes } from 'mongoose';
 
 export type CardDocument = HydratedDocument<Card>;
 

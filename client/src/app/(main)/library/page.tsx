@@ -8,6 +8,8 @@ import getDecksList from "@/utilities/fetch";
 import "react-loading-skeleton/dist/skeleton.css";
 import AddDeckModal from "@/components/inputs/AddDeckModal";
 import { useState } from "react";
+import React from "react";
+import Link from "next/link";
 
 export default function LibraryPage() {
 	const { data, isFetching, isError } = useQuery({
@@ -20,7 +22,6 @@ export default function LibraryPage() {
 	});
 
 	const [showAddDeck, setShowAddDeck] = useState<boolean>(false);
-
 	return (
 		<main className="pt-3 px-6">
 			<AddDeckModal
@@ -32,11 +33,11 @@ export default function LibraryPage() {
 				<div className="flex gap-3">
 					<button
 						onClick={() => setShowAddDeck(true)}
-						className="text-cool-grey-700 text-lg border border-cool-grey-800 px-2 py-0.5 rounded-md"
+						className="text-cool-grey-700 border border-cool-grey-800 px-2 py-0.5 rounded-md"
 					>
 						Add a deck
 					</button>
-					<button className="text-cool-grey-700 text-lg border border-cool-grey-800 px-2 py-0.5 rounded-md">
+					<button className="text-cool-grey-700 border border-cool-grey-800 px-2 py-0.5 rounded-md">
 						Filter
 					</button>
 				</div>
@@ -57,17 +58,23 @@ export default function LibraryPage() {
 			) : isError ? (
 				"not found"
 			) : (
-				<div className="grid grid-cols-[50%_16.6%_16.6%_16.6%] grid-rows-[32px,_repeat(auto,56px)] pr-4">
+				<div
+					className="grid grid-cols-[50%_16.6%_16.6%_16.6%] pr-4"
+					style={{ gridTemplateRows: `32px repeat(${data?.length}, 54px)` }}
+				>
 					<p className="justify-self-center text-cool-grey-800 ">Deck</p>
 					<p className="justify-self-end text-cool-grey-800">New</p>
 					<p className="justify-self-end text-cool-grey-800">Learn</p>
 					<p className="justify-self-end text-cool-grey-800">Due</p>
-					{data?.map((e) => (
-						<>
-							<p className="text-lg text-blue-vivid-400 self-center">
+					{data?.map((e, i) => (
+						<React.Fragment key={i}>
+							<Link
+								href={"/own-decks/" + e._id}
+								className="text-lg text-blue-vivid-400 self-center"
+							>
 								{e.deck_name}
-							</p>
-							<p className="justify-self-end self-center text-blue-600 font-bold border-b">
+							</Link>
+							<p className="justify-self-end self-center text-blue-600 font-bold">
 								{e.new}
 							</p>
 							<p className="justify-self-end self-center text-red-vivid-500 font-bold">
@@ -76,7 +83,7 @@ export default function LibraryPage() {
 							<p className="justify-self-end self-center text-yellow-vivid-600 font-bold">
 								{e.review}
 							</p>
-						</>
+						</React.Fragment>
 					))}
 				</div>
 			)}

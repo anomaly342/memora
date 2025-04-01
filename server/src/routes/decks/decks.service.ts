@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Deck } from 'src/schemas/deck.schema';
-import { deckWithoutCards } from './decks.dto';
+import { AddDeckSchemaType, deckWithoutCards } from './decks.dto';
 import { JwtPayload, verify } from 'jsonwebtoken';
+import { Tag } from 'src/schemas/tag.schema';
 
 @Injectable()
 export class DecksService {
@@ -11,11 +12,13 @@ export class DecksService {
   constructor(
     @InjectModel(Deck.name)
     private readonly deckModel: Model<Deck>,
+    @InjectModel(Tag.name)
+    private readonly tagModel: Model<Tag>,
   ) {}
 
   async GetDecks(token: string): Promise<deckWithoutCards[]> {
     const obj: JwtPayload = verify(token, this.PRIVATE_KEY) as JwtPayload;
-    console.log('');
+
     const response = await this.deckModel
       .find({ auther: obj.user_id })
       .populate('auther')
@@ -62,7 +65,51 @@ export class DecksService {
         review: review,
       });
     });
-    console.log(returnedValue);
+    console.log('refetch');
+    return returnedValue;
+  }
+
+  async CreateDeck(token: string, addDeckSchemaType: AddDeckSchemaType) {
+    const obj: JwtPayload = verify(token, this.PRIVATE_KEY) as JwtPayload;
+
+    const { deckName, tags, description } = addDeckSchemaType;
+    const tagObjectIds: Types.ObjectId[] = [];
+    for (const tagName of tags) {
+      const existingTag = await this.tagModel.findOne({
+        tag_name: tagName.name,
+      });
+      if (existingTag) {
+        tagObjectIds.push(existingTag._id);
+      } else {
+        const newTag = await this.tagModel.create({ tag_name: tagName.name });
+        tagObjectIds.push(newTag._id);
+      }
+    }
+    const response = await this.deckModel.insertOne({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      auther: obj.user_id,
+      cards: [],
+      creation_date: Date.now(),
+      deck_name: deckName,
+      description: description,
+      isPublic: false,
+      tags: tagObjectIds,
+    });
+
+    const returnedValue: deckWithoutCards = {
+      _id: response._id.toString(),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      author: obj.username,
+      card_amount: 0,
+      cover_img: 'idk',
+      creation_date: response.creation_date,
+      deck_name: response.deck_name,
+      description: response.description,
+      learn: 0,
+      new: 0,
+      review: 0,
+      tags: tags.map((e) => e.name),
+    };
     return returnedValue;
   }
 }
