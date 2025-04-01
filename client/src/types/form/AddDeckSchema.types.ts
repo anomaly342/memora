@@ -9,16 +9,18 @@ export const AddDeckSchema = z.object({
 	description: z
 		.string()
 		.max(1000, "Description must not be more than 1000 characters")
-		.trim(),
+		.trim()
+		.optional(),
 	tags: z
 		.array(
-			z
-				.string()
-				.min(1, "Tags must not be empty")
-				.regex(/^[A-Za-z\s]+$/, "Tag must be in English")
+			z.object({
+				name: z
+					.string()
+					.min(1, "Tag name is required")
+					.regex(/^[A-Za-z\s]+$/, "Tag must be in English"), // Inline validation for `name`
+			})
 		)
-		.min(1, "At least one tag is required")
-		.max(10, "A maximum of 10 tags is allowed"),
+		.min(1, "At least one tag is required"), // Validate that the array has at least one tag
 });
 
 export type AddDeckSchemaType = z.infer<typeof AddDeckSchema>;
