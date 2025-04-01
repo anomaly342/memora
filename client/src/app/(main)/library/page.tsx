@@ -8,29 +8,35 @@ import getDecksList from "@/utilities/fetch";
 import "react-loading-skeleton/dist/skeleton.css";
 import AddDeckModal from "@/components/inputs/AddDeckModal";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function LibraryPage() {
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["deckList"],
 		queryFn: getDecksList,
 		staleTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+		retryOnMount: false,
+		retry: false,
 	});
 
-	const searchParams = useSearchParams();
-	const showAddDeck = searchParams?.get("showAdd");
+	const [showAddDeck, setShowAddDeck] = useState<boolean>(false);
 
 	return (
 		<main className="pt-3 px-6">
-			{showAddDeck === "true" && <AddDeckModal></AddDeckModal>}
+			<AddDeckModal
+				showAddDeck={showAddDeck}
+				setShowAddDeck={setShowAddDeck}
+			></AddDeckModal>
 			<h1 className="font-bold text-3xl ">Library</h1>
 			<div className="my-2 flex px-2 justify-between items-center">
 				<div className="flex gap-3">
-					<Link
-						href={"/library?showAdd=true"}
+					<button
+						onClick={() => setShowAddDeck(true)}
 						className="text-cool-grey-700 text-lg border border-cool-grey-800 px-2 py-0.5 rounded-md"
 					>
 						Add a deck
-					</Link>
+					</button>
 					<button className="text-cool-grey-700 text-lg border border-cool-grey-800 px-2 py-0.5 rounded-md">
 						Filter
 					</button>

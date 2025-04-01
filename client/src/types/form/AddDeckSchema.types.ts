@@ -1,17 +1,24 @@
 import { z } from "zod";
 
-export const LoginSchema = z.object({
-	username: z
+export const AddDeckSchema = z.object({
+	deckName: z
 		.string()
-		.min(5, "Username must be between 5 and 13 characters")
-		.max(13, "Username must be between 5 and 13 characters")
-		.regex(/^(?!.* {2})[a-zA-Z0-9_\-\[\] ]+$/, "No special characters allowed")
+		.min(6, "Deck name must be between 6 and 72 characters")
+		.max(72, "Deck name must be between 6 and 72 characters")
 		.trim(),
-	password: z
+	description: z
 		.string()
-		.min(6, "Password must be between 6 and 23 characters")
-		.max(23, "Password must be between 6 and 23 characters")
-		.regex(/^\S*$/, "No spaces allowed"),
+		.max(1000, "Description must not be more than 1000 characters")
+		.trim(),
+	tags: z
+		.array(
+			z
+				.string()
+				.min(1, "Tags must not be empty")
+				.regex(/^[A-Za-z\s]+$/, "Tag must be in English")
+		)
+		.min(1, "At least one tag is required")
+		.max(10, "A maximum of 10 tags is allowed"),
 });
 
-export type LoginSchemaType = z.infer<typeof LoginSchema>;
+export type AddDeckSchemaType = z.infer<typeof AddDeckSchema>;

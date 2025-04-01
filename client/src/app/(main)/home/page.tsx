@@ -12,6 +12,8 @@ export default function HomePage() {
 		queryKey: ["deckList"],
 		queryFn: getDecksList,
 		staleTime: 1000 * 60 * 5,
+		retryOnMount: false,
+		retry: false,
 	});
 
 	const pending_cards = () => {
