@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Date, HydratedDocument } from 'mongoose';
+import { HydratedDocument, SchemaType, SchemaTypes } from 'mongoose';
 
 export type CardDocument = HydratedDocument<Card>;
 
@@ -11,19 +11,24 @@ export class Card {
   @Prop({ required: true })
   back: string;
 
-  @Prop({ required: true, default: null })
+  @Prop({ required: true, type: SchemaTypes.Decimal128, default: null })
   ease: number | null;
 
   @Prop({ required: true, enum: ['new', 'learning', 'review'], default: 'new' })
   status: 'new' | 'learning' | 'review';
 
-  @Prop({ reuqired: true, default: null, enum: [1, 2, 3, null] })
+  @Prop({
+    reuqired: true,
+    type: SchemaTypes.Int32,
+    default: null,
+    enum: [1, 2, 3, null],
+  })
   step: 1 | 2 | 3 | null;
 
   @Prop({ required: true })
   interval: number;
 
-  @Prop({ required: true, default: null })
+  @Prop({ required: true, type: SchemaTypes.Date, default: null })
   scheduled_review: Date | null;
 }
 

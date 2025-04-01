@@ -57,7 +57,7 @@ export default function LibraryPage() {
 			) : isError ? (
 				"not found"
 			) : (
-				<div className="grid grid-cols-[50%_16.6%_16.6%_16.6%] grid-rows-[32px,_repeat(99,56px)] pr-4">
+				<div className="grid grid-cols-[50%_16.6%_16.6%_16.6%] grid-rows-[32px,_repeat(auto,56px)] pr-4">
 					<p className="justify-self-center text-cool-grey-800 ">Deck</p>
 					<p className="justify-self-end text-cool-grey-800">New</p>
 					<p className="justify-self-end text-cool-grey-800">Learn</p>

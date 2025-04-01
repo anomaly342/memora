@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Date, HydratedDocument, SchemaTypes, Types } from 'mongoose';
-import { Tag } from './tag.schema';
-import { Account } from './account.schema';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
+import { Tag, TagDocument } from './tag.schema';
+import { Account, AccountDocument } from './account.schema';
 import { Card, CardSchema } from './card.schema';
 
 export type DeckDocument = HydratedDocument<Deck>;
@@ -12,47 +12,29 @@ export class Deck {
   deck_name: string;
 
   @Prop({ required: true, type: SchemaTypes.ObjectId, ref: Account.name })
-  auther: Types.ObjectId;
+  auther: AccountDocument;
+
+  @Prop({ required: true, type: SchemaTypes.Date })
+  creation_date: Date;
 
   @Prop({ required: true })
   isPublic: boolean;
 
-  @Prop({ required: true, type: SchemaTypes.ObjectId, ref: Tag.name })
-  tags: [Types.ObjectId];
-
-  @Prop({ required: true })
-  creation: Date;
+  @Prop({ type: [{ type: SchemaTypes.ObjectId, ref: Tag.name }] })
+  tags: TagDocument[];
 
   @Prop({
-    type: {
-      new: [CardSchema],
-      learning: [CardSchema],
-      review: [CardSchema],
-    },
-    default: { new: [], learning: [], review: [] },
+    type: [CardSchema],
+    default: [],
   })
-  cards: {
-    new: Card[];
-    learning: Card[];
-    review: Card[];
-  };
+  cards: Card[];
 
   @Prop()
   description: string;
-
-  @Prop({ required: true })
-  card_amout: number;
 }
 
 const DeckSchema = SchemaFactory.createForClass(Deck);
 
 // Pre-save hook to automatically calculate card_amout
-DeckSchema.pre('save', function (next) {
-  this.card_amout =
-    (this.cards?.new?.length || 0) +
-    (this.cards?.learning?.length || 0) +
-    (this.cards?.review?.length || 0);
-  next();
-});
 
 export { DeckSchema };
