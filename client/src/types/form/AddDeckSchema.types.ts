@@ -1,0 +1,24 @@
+import { z } from "zod";
+
+export const AddDeckSchema = z.object({
+	deckName: z
+		.string()
+		.min(6, "Deck name must be between 6 and 72 characters")
+		.max(72, "Deck name must be between 6 and 72 characters")
+		.trim(),
+	description: z
+		.string()
+		.max(1000, "Description must not be more than 1000 characters")
+		.trim(),
+	tags: z
+		.array(
+			z
+				.string()
+				.min(1, "Tags must not be empty")
+				.regex(/^[A-Za-z\s]+$/, "Tag must be in English")
+		)
+		.min(1, "At least one tag is required")
+		.max(10, "A maximum of 10 tags is allowed"),
+});
+
+export type AddDeckSchemaType = z.infer<typeof AddDeckSchema>;

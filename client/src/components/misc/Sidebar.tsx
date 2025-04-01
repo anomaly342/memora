@@ -71,16 +71,19 @@ export default function Sidebar() {
 					Icon={IoHomeOutline}
 					name="home"
 					pathname={pathname}
+					setShowSidebar={setShowsidebar}
 				></SidebarElement>
 				<SidebarElement
 					Icon={IoLibraryOutline}
 					name="library"
 					pathname={pathname}
+					setShowSidebar={setShowsidebar}
 				></SidebarElement>
 				<SidebarElement
 					Icon={IoIosStats}
 					name="stats"
 					pathname={pathname}
+					setShowSidebar={setShowsidebar}
 				></SidebarElement>
 			</div>
 			<div
