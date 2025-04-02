@@ -19,7 +19,7 @@ export default function HomePage() {
 	const pending_cards = () => {
 		let count = 0;
 		data?.map((e) => {
-			count += e.learn + e.review + e.review;
+			count += e.learn + e.new + e.review;
 		});
 
 		return count;

@@ -33,7 +33,12 @@ export default function Sidebar() {
 	const pathname = usePathname();
 
 	return (
-		<div className="p-4 flex justify-between items-center border-b border-b-blue-vivid-400">
+		<div
+			className={`p-4 flex justify-between items-center border-b border-b-blue-vivid-400 ${
+				pathname.startsWith("/own-decks") ? "hidden" : " "
+			}
+			)}`}
+		>
 			<div className="flex gap-3 items-center">
 				<Image className="size-8" src={Logo} alt="logo"></Image>
 				<h3 className="font-bold uppercase">Memora</h3>
