@@ -38,3 +38,13 @@ export const AddDeckSchema = z.object({
 });
 
 export type AddDeckSchemaType = z.infer<typeof AddDeckSchema>;
+
+export interface CardUpdate {
+  uuid: string;
+  ease: number;
+  status: 'new' | 'learn' | 'review';
+  step: number;
+  interval: number;
+  scheduled_review: Date;
+  goodStreak: number;
+}

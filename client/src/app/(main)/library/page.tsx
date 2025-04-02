@@ -16,7 +16,7 @@ export default function LibraryPage() {
 		queryKey: ["deckList"],
 		queryFn: getDecksList,
 		staleTime: 1000 * 60 * 5,
-		refetchOnWindowFocus: false,
+		refetchOnWindowFocus: true,
 		retryOnMount: false,
 		retry: false,
 	});
@@ -37,17 +37,17 @@ export default function LibraryPage() {
 					>
 						Add a deck
 					</button>
-					<button className="text-cool-grey-700 border border-cool-grey-800 px-2 py-0.5 rounded-md">
+					{/* <button className="text-cool-grey-700 border border-cool-grey-800 px-2 py-0.5 rounded-md">
 						Filter
-					</button>
+					</button> */}
 				</div>
 
 				<div className="flex gap-1">
-					<PiListDashesBold
+					{/* <PiListDashesBold
 						color="white"
 						className="size-6 bg-blue-vivid-400"
 					/>
-					<PiSquaresFour className="size-6" />
+					<PiSquaresFour className="size-6" /> */}
 				</div>
 			</div>
 			{isFetching ? (

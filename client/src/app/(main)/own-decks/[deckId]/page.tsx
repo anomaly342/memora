@@ -1,7 +1,7 @@
 "use client";
 
 import { deckWithoutCards } from "@/types/decks/decksWithoutCards.types";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import cover from "@/assets/sample_cover.webp";
@@ -9,8 +9,21 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 export default function PreviewPage() {
+	const queryClient = new QueryClient();
 	const params = useParams<{ deckId: string }>();
 	const router = useRouter();
+	const onDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${params.deckId}`,
+			{ method: "DELETE", credentials: "include" }
+		);
+
+		if (response.ok) {
+			queryClient.invalidateQueries({ queryKey: ["deckList"] });
+			router.push("/library");
+		}
+	};
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["getDeck"],
 		queryFn: async () => {
@@ -87,8 +100,17 @@ export default function PreviewPage() {
 				</div>
 			</div>
 			<div className="h-full mt-32 grid place-content-center">
-				<button className="text-lg font-bold bg-blue-vivid-400 text-cool-grey-050 w-60 py-2 rounded-md">
+				<Link
+					href={`/practice/${data?._id}`}
+					className="text-lg font-bold bg-blue-vivid-400 text-cool-grey-050 w-60 py-2 rounded-md text-center"
+				>
 					Study
+				</Link>
+				<button
+					onClick={(e) => onDelete(e)}
+					className="text-lg mt-44 font-bold bg-red-vivid-500 text-cool-grey-050 w-60 py-2 rounded-md text-center"
+				>
+					Delete
 				</button>
 			</div>
 		</div>
