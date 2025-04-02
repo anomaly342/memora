@@ -8,15 +8,15 @@ import * as path from 'path';
 
 patchNestJsSwagger();
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync(
-      path.join(__dirname, '../certificates/localhost-key.pem'),
-    ),
-    cert: fs.readFileSync(
-      path.join(__dirname, '../certificates/localhost.pem'),
-    ),
-  };
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  // const httpsOptions = {
+  //   key: fs.readFileSync(
+  //     path.join(__dirname, '../certificates/localhost-key.pem'),
+  //   ),
+  //   cert: fs.readFileSync(
+  //     path.join(__dirname, '../certificates/localhost.pem'),
+  //   ),
+  // };
+  const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
   app.enableCors({
