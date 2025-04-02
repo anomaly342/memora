@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito, Montserrat } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/misc/QueryClientProvider";
 
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "700"] });
 
@@ -16,7 +17,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${nunito.className} antialiased`}>{children}</body>
+			<body className={`${nunito.className} antialiased text-gray-950`}>
+				<Providers>{children}</Providers>
+			</body>
 		</html>
 	);
 }
