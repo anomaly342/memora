@@ -1,17 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
   Res,
   UsePipes,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { DecksService } from './decks.service';
-import { AddDeckSchema, AddDeckSchemaType } from './decks.dto';
+import { AddDeckSchema, AddDeckSchemaType, CardUpdate } from './decks.dto';
 import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('decks')
@@ -59,6 +61,48 @@ export class DecksController {
     return res.status(200).json(response);
   }
 
-  //   @Delete(':deckId')
-  //   async DeleteDeck(@Param() params: Record<'deckId', string>) {}
+  @Delete(':deckId')
+  async DeleteDeck(
+    @Param() params: Record<'deckId', string>,
+    @Req() req: Request,
+  ) {
+    const deckId = params.deckId;
+    const token = req.cookies['jwt-token'] as string;
+    const response = await this.deckService.deleteDeck(token, deckId);
+  }
+
+  @Get(':deckId/cards')
+  async GetCards(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param() params: Record<'deckId', string>,
+  ) {
+    const deckId = params.deckId;
+    const token = req.cookies['jwt-token'] as string;
+    const response = await this.deckService.getCards(token, deckId);
+
+    if (!response) {
+      return res.redirect(process.env.CLIENT_URL as string);
+    }
+
+    return res.status(200).json(response);
+  }
+
+  @Put(':deckId/cards')
+  async UpdateCard(
+    @Body() json: CardUpdate,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param() params: Record<'deckId', string>,
+  ) {
+    const deckId = params.deckId;
+    const token = req.cookies['jwt-token'] as string;
+    const response = await this.deckService.updateCard(token, deckId, json);
+
+    if (!response) {
+      return res.sendStatus(HttpStatus.UNAUTHORIZED);
+    }
+
+    return res.status(200).json(response);
+  }
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes } from 'mongoose';
-
+import { v4 as uuidv4 } from 'uuid'; // Import the uuid library
 export type CardDocument = HydratedDocument<Card>;
 
 @Schema({})
@@ -17,6 +17,9 @@ export class Card {
   @Prop({ required: true, enum: ['new', 'learning', 'review'], default: 'new' })
   status: 'new' | 'learning' | 'review';
 
+  @Prop({ required: true, type: SchemaTypes.Int32, default: 0 })
+  goodStreak: number;
+
   @Prop({
     reuqired: true,
     type: SchemaTypes.Int32,
@@ -30,6 +33,9 @@ export class Card {
 
   @Prop({ required: true, type: SchemaTypes.Date, default: null })
   scheduled_review: Date | null;
+
+  @Prop({ type: String, default: () => uuidv4(), required: true }) // Add a UUID field with a default value
+  uuid: string;
 }
 
 export const CardSchema = SchemaFactory.createForClass(Card);
