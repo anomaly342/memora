@@ -251,7 +251,6 @@ export class DecksService {
       .deleteOne({ _id: deckId, auther: obj.user_id })
       .exec();
 
-    if (!response) {
-    }
+    return response.acknowledged;
   }
 }
