@@ -21,7 +21,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     origin: 'https://localhost:3000',
-    methods: ['GET', 'POST', 'PUT'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
   const config = new DocumentBuilder()

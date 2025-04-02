@@ -1,7 +1,7 @@
 "use client";
 
 import { deckWithoutCards } from "@/types/decks/decksWithoutCards.types";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import cover from "@/assets/sample_cover.webp";
@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 export default function PreviewPage() {
+	const queryClient = new QueryClient();
 	const params = useParams<{ deckId: string }>();
 	const router = useRouter();
 	const onDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -19,6 +20,7 @@ export default function PreviewPage() {
 		);
 
 		if (response.ok) {
+			queryClient.invalidateQueries({ queryKey: ["deckList"] });
 			router.push("/library");
 		}
 	};

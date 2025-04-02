@@ -65,10 +65,17 @@ export class DecksController {
   async DeleteDeck(
     @Param() params: Record<'deckId', string>,
     @Req() req: Request,
+    @Res() res: Response,
   ) {
     const deckId = params.deckId;
     const token = req.cookies['jwt-token'] as string;
     const response = await this.deckService.deleteDeck(token, deckId);
+
+    if (response) {
+      return res.sendStatus(200);
+    } else {
+      return res.sendStatus(HttpStatus.UNAUTHORIZED);
+    }
   }
 
   @Get(':deckId/cards')

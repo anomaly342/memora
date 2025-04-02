@@ -33,28 +33,41 @@ export default function Sidebar() {
 	const pathname = usePathname();
 
 	return (
-		<div
-			className={`p-4 flex justify-between items-center border-b border-b-blue-vivid-400 ${
-				pathname.startsWith("/own-decks") ? "hidden" : " "
-			}
-			)}`}
-		>
-			<div className="flex gap-3 items-center">
-				<Image className="size-8" src={Logo} alt="logo"></Image>
-				<h3 className="font-bold uppercase">Memora</h3>
-			</div>
-			<div className="flex gap-3 items-center">
-				<IoIosSearch className="size-8"></IoIosSearch>
-				<RxHamburgerMenu
-					onClick={() => {
-						setShowsidebar(true);
-					}}
-					className="size-8"
-				></RxHamburgerMenu>
-			</div>
+		<>
+			<div
+				className={`p-4 flex justify-between items-center border-b border-b-blue-vivid-400 ${
+					pathname.startsWith("/decks")
+						? "absolute bg-transparent w-full z-10 border-b-0"
+						: " "
+				} ${pathname.startsWith("/own-decks") ? "hidden" : " "}
+			`}
+			>
+				<div className="flex gap-3 items-center">
+					<Image className="size-8" src={Logo} alt="logo"></Image>
+					<h3
+						className={`font-bold uppercase ${
+							pathname.startsWith("/decks") ? "text-white" : ""
+						}`}
+					>
+						Memora
+					</h3>
+				</div>
+				<div className="flex gap-3 items-center">
+					<IoIosSearch
+						color={`${pathname.startsWith("/decks") ? "white" : ""} `}
+						className="size-8"
+					></IoIosSearch>
+					<RxHamburgerMenu
+						color={`${pathname.startsWith("/decks") ? "white" : ""} `}
+						onClick={() => {
+							setShowsidebar(true);
+						}}
+						className="size-8"
+					></RxHamburgerMenu>
+				</div>
 
-			{/* sidebar */}
-
+				{/* sidebar */}
+			</div>
 			<div
 				className={`absolute top-0 left-0 h-full w-64 bg-white z-10 ${
 					showSidebar ? "" : "hidden"
@@ -97,6 +110,6 @@ export default function Sidebar() {
 				}`}
 				onClick={() => setShowsidebar(false)}
 			></div>
-		</div>
+		</>
 	);
 }
