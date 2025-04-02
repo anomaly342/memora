@@ -24,7 +24,6 @@ export class DecksService {
       .populate('auther')
       .populate('tags')
       .exec();
-    console.log(response[0]);
     const returnedValue: deckWithoutCards[] = [];
 
     response.map((e) => {
@@ -34,7 +33,6 @@ export class DecksService {
       let review = 0;
 
       cards.map((card) => {
-        console.log(card.scheduled_review);
         if (card.status === 'new') {
           _new++;
         } else if (card.status === 'learning') {
@@ -53,9 +51,9 @@ export class DecksService {
       returnedValue.push({
         _id: _id.toString(),
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        author: obj.username,
-        card_amount: _new + learn + review,
+        auther: obj.username,
         cover_img: 'idk',
+        card_amount: cards.length,
         deck_name: deck_name,
         creation_date: creation_date,
         tags: tags.map((e) => e.tag_name),
@@ -65,7 +63,6 @@ export class DecksService {
         review: review,
       });
     });
-    console.log('refetch');
     return returnedValue;
   }
 
@@ -98,8 +95,9 @@ export class DecksService {
 
     const returnedValue: deckWithoutCards = {
       _id: response._id.toString(),
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      author: obj.username,
+      auther: obj.username,
       card_amount: 0,
       cover_img: 'idk',
       creation_date: response.creation_date,
@@ -110,6 +108,60 @@ export class DecksService {
       review: 0,
       tags: tags.map((e) => e.name),
     };
+    return returnedValue;
+  }
+
+  async getDeck(token: string, deckId: string) {
+    const obj: JwtPayload = verify(token, this.PRIVATE_KEY) as JwtPayload;
+
+    if (!Types.ObjectId.isValid(deckId)) {
+      return null;
+    }
+    const response = await this.deckModel
+      .findOne({ _id: deckId, auther: obj.user_id })
+      .populate('auther')
+      .populate('tags')
+      .exec();
+
+    if (!response) {
+      return null;
+    }
+
+    const { auther, cards, creation_date, deck_name, description, tags } =
+      response;
+
+    let _new = 0;
+    let learn = 0;
+    let review = 0;
+
+    cards.map((card) => {
+      if (card.status === 'new') {
+        _new++;
+      } else if (card.status === 'learning') {
+        learn++;
+      } else if (card.status === 'review') {
+        if (card.scheduled_review !== null) {
+          if (card.scheduled_review.toISOString() < new Date().toISOString()) {
+            review++;
+          }
+        }
+      }
+    });
+
+    const returnedValue: deckWithoutCards = {
+      _id: response._id.toString(),
+      card_amount: cards.length,
+      auther: auther.username,
+      cover_img: 'idk',
+      creation_date: creation_date,
+      deck_name: deck_name,
+      description: description,
+      learn: learn,
+      new: _new,
+      review: review,
+      tags: tags.map((e) => e.tag_name),
+    };
+
     return returnedValue;
   }
 }

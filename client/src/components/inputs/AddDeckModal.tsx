@@ -10,6 +10,7 @@ import {
 import { PiPlusCircle } from "react-icons/pi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deckWithoutCards } from "@/types/decks/decksWithoutCards.types";
+import ImageUpload from "./ImageUpload";
 
 export default function AddDeckModal({
 	showAddDeck,
@@ -26,6 +27,7 @@ export default function AddDeckModal({
 		formState: { errors, isValid, isSubmitting },
 		control,
 		trigger,
+		reset,
 	} = useForm<AddDeckSchemaType>({
 		resolver: zodResolver(AddDeckSchema),
 		mode: "onChange",
@@ -52,8 +54,8 @@ export default function AddDeckModal({
 	};
 
 	useEffect(() => {
-		console.log(fields);
-	}, [fields]);
+		reset();
+	}, [showAddDeck]);
 
 	const mutation = useMutation({
 		mutationFn: async (data: AddDeckSchemaType) => {
@@ -189,6 +191,12 @@ export default function AddDeckModal({
 						{errors.description.message}
 					</p>
 				)}
+				{errors.image && (
+					<p className="w-64 text-sm text-red-500 mt-1">
+						{errors.image.message}
+					</p>
+				)}
+				<label htmlFor="Select image.."></label>
 				<div className="flex justify-end gap-2 mt-4">
 					<button
 						onClick={() => setShowAddDeck(false)}

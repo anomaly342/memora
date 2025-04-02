@@ -4,14 +4,14 @@ export interface deckWithoutCards {
   _id: string;
   deck_name: string;
   cover_img: string;
-  card_amount: number;
   tags: string[];
-  author: string;
+  auther: string;
   creation_date: Date;
   description: string;
   new: number;
   learn: number;
   review: number;
+  card_amount: number;
 }
 
 export const AddDeckSchema = z.object({

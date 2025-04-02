@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
+  Param,
   Post,
   Req,
   Res,
@@ -36,6 +38,23 @@ export class DecksController {
       token,
       addDeckSchemaType,
     );
+
+    return res.status(200).json(response);
+  }
+
+  @Get(':deckId')
+  async getDeck(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param() params: Record<'deckId', string>,
+  ) {
+    const deckId = params.deckId;
+    const token = req.cookies['jwt-token'] as string;
+    const response = await this.deckService.getDeck(token, deckId);
+
+    if (!response) {
+      return res.redirect(process.env.CLIENT_URL as string);
+    }
 
     return res.status(200).json(response);
   }
