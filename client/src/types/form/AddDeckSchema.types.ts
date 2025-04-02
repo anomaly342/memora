@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-const MAX_SIZE = 1 * 1024 * 1024; // 1MB
-const ALLOWED_TYPES = ["image/png", "image/jpeg"];
-const MAX_DIMENSIONS = { width: 1000, height: 1000 };
-
 export const AddDeckSchema = z.object({
 	deckName: z
 		.string()
