@@ -1,11 +1,7 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { string } from "zod";
 import cover from "@/assets/sample_cover.webp";
 export default function DeckInfoPage() {
-	const params: Record<"deckId", string> = useParams();
-
 	return (
 		<div
 			className="w-full h-44 relative"
