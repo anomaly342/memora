@@ -10,7 +10,6 @@ import {
 import { PiPlusCircle } from "react-icons/pi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deckWithoutCards } from "@/types/decks/decksWithoutCards.types";
-import ImageUpload from "./ImageUpload";
 
 export default function AddDeckModal({
 	showAddDeck,

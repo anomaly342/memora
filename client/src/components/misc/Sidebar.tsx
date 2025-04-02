@@ -15,7 +15,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 export default function Sidebar() {
 	const [showSidebar, setShowsidebar] = useState<boolean>(false);
-	const { data, isError, isLoading, isSuccess } = useQuery({
+	const { data, isError, isLoading } = useQuery({
 		queryKey: ["getOwnUser"],
 		queryFn: async () => {
 			const response = await fetch(
