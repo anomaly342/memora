@@ -93,12 +93,13 @@ const fetchFlashcards = async (deckId: string): Promise<Flashcard[]> => {
   }));
 };
 
+// In page.tsx, modify the addFlashcard function:
 const addFlashcard = async (deckId: string, flashcard: Omit<Flashcard, 'id' | 'deckId'>): Promise<Flashcard> => {
   try {
     // First, get the current deck to ensure it exists and get the current card count
     const deckResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}`, {
       method: 'GET',
-      credentials: 'include',
+      credentials: 'include', // This correctly sends the cookies
     });
     
     if (!deckResponse.ok) {
@@ -123,11 +124,11 @@ const addFlashcard = async (deckId: string, flashcard: Omit<Flashcard, 'id' | 'd
     
     // Send only the operation to add a card, not the entire deck
     const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}/cards`, {
-      method: 'PUT',  // Assuming your API supports adding cards via POST to this endpoint
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
+      credentials: 'include', // This correctly sends the cookies
       body: JSON.stringify(newCard),
     });
     
@@ -276,6 +277,43 @@ export default function CreateFlashcard() {
   const [open, setOpen] = useState(false);
   const [currentCard, setCurrentCard] = useState<Flashcard | null>(null);
 
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Optimistically assume authenticated
+
+  // Add this function to your component
+  const checkAuth = async () => {
+    try {
+      // Get the JWT token from cookies
+      const cookies = document.cookie.split(';');
+      let jwtToken = '';
+      
+      for (const cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'jwt-token') {
+          jwtToken = value;
+          break;
+        }
+      }
+      
+      if (!jwtToken) {
+        console.error('JWT token not found in cookies');
+        return false;
+      }
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/authentication/check`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jwt_token: jwtToken }),
+      });
+      
+      return response.ok;
+    } catch (error) {
+      console.error('Auth check error:', error);
+      return false;
+    }
+  };
   
   // Fetch deck info 
   const { data: deckInfo } = useQuery({
@@ -315,11 +353,12 @@ export default function CreateFlashcard() {
       queryClient.invalidateQueries({ queryKey: ['flashcards', deckId] });
       setPageCount(prevCount => prevCount + 1);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error adding flashcard:', error);
-      // Log stack trace if available
-      if (error instanceof Error) {
-        console.error('Stack:', error.stack);
+      // Check for 401 status in the error
+      if (error.message?.includes('401') || error.response?.status === 401) {
+        setIsAuthenticated(false);
+        alert("Your session has expired. Please log in again.");
       }
     }
   });
@@ -369,9 +408,19 @@ export default function CreateFlashcard() {
     }
   };
 
-  const addNewFlashcard = () => {
+  const addNewFlashcard = async () => {
+    // Check authentication before making the request
+    const authenticated = await checkAuth();
+    
+    if (!authenticated) {
+      // Handle unauthenticated state - show login prompt or redirect
+      alert("You need to be logged in to add flashcards");
+      // Optionally redirect to login page
+      // window.location.href = '/login';
+      return;
+    }
+    
     const newFlashcard = { 
-      // id: pageCount + 1, 
       frontText: "Front", 
       backText: "Back", 
       imageUrl: null, 
@@ -485,6 +534,7 @@ export default function CreateFlashcard() {
     setAudioUrl(null);
   };
   
+
   
 
   // Add this inside your useEffect or component body
@@ -512,6 +562,7 @@ export default function CreateFlashcard() {
     if (deckId) {
       testFetch();
     }
+    checkAuth();
   }, [deckId]);
 
   // Display loading state
@@ -527,6 +578,21 @@ export default function CreateFlashcard() {
   //Test
   console.log('Current deckId:', deckId);
   console.log('API URL:', `${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}`);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
+        <p className="mb-4">You need to be logged in to manage flashcards.</p>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.href = '/login'}
+        >
+          Go to Login
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="relative bg-white overflow-hidden mx-auto shadow-lg min-h-screen">
       {/* Header */}
