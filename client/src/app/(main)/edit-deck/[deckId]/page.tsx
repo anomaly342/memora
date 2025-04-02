@@ -94,57 +94,64 @@ const fetchFlashcards = async (deckId: string): Promise<Flashcard[]> => {
 };
 
 const addFlashcard = async (deckId: string, flashcard: Omit<Flashcard, 'id' | 'deckId'>): Promise<Flashcard> => {
-  // First, get the current deck
-  const deckResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
-  
-  if (!deckResponse.ok) {
-    throw new Error('Failed to fetch deck');
+  try {
+    // First, get the current deck to ensure it exists and get the current card count
+    const deckResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    
+    if (!deckResponse.ok) {
+      const errorText = await deckResponse.text();
+      console.error('Fetch deck error response:', errorText);
+      throw new Error(`Failed to fetch deck: ${deckResponse.status} ${deckResponse.statusText}`);
+    }
+    
+    const deckData: DeckData = await deckResponse.json();
+    const currentCardCount = deckData.cards ? deckData.cards.length : 0;
+    
+    // Convert frontend flashcard to backend card schema
+    const newCard: BackendCard = {
+      front: flashcard.frontText,
+      back: flashcard.backText,
+      ease: null,
+      status: 'new',
+      step: null,
+      interval: 0,
+      scheduled_review: null
+    };
+    
+    // Send only the operation to add a card, not the entire deck
+    const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}/cards`, {
+      method: 'PUT',  // Assuming your API supports adding cards via POST to this endpoint
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(newCard),
+    });
+    
+    if (!updateResponse.ok) {
+      const errorText = await updateResponse.text();
+      console.error('Add card error response:', errorText);
+      throw new Error(`Failed to add flashcard: ${updateResponse.status} ${updateResponse.statusText}`);
+    }
+    
+    // Return the new flashcard with a generated ID
+    return {
+      id: currentCardCount + 1,
+      deckId,
+      frontText: flashcard.frontText,
+      backText: flashcard.backText,
+      imageUrl: flashcard.imageUrl,
+      videoUrl: flashcard.videoUrl,
+      audioUrl: flashcard.audioUrl,
+      status: flashcard.status
+    };
+  } catch (error) {
+    console.error('Error in addFlashcard:', error);
+    throw error;
   }
-  
-  const deckData: DeckData = await deckResponse.json();
-  
-  // Convert frontend flashcard to backend card schema
-  const newCard: BackendCard = {
-    front: flashcard.frontText,
-    back: flashcard.backText,
-    ease: null,
-    status: 'new',
-    step: null,
-    interval: 0,
-    scheduled_review: null
-  };
-  
-  // Add the new card to the cards array
-  const updatedCards = [...(deckData.cards || []), newCard];
-  
-  // Update the deck with the new cards array
-  const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/decks/${deckId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ ...deckData, cards: updatedCards }),
-  });
-  
-  if (!updateResponse.ok) {
-    throw new Error('Failed to add flashcard');
-  }
-  
-  // Return the new flashcard with a generated ID
-  return {
-    id: updatedCards.length,
-    deckId,
-    frontText: flashcard.frontText,
-    backText: flashcard.backText,
-    imageUrl: flashcard.imageUrl,
-    videoUrl: flashcard.videoUrl,
-    audioUrl: flashcard.audioUrl,
-    status: flashcard.status
-  };
 };
 
 const updateFlashcard = async (deckId: string, flashcard: Flashcard): Promise<Flashcard> => {
