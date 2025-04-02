@@ -1,6 +1,5 @@
 "use client";
 
-import { PiSquaresFour, PiListDashesBold } from "react-icons/pi";
 import { useQuery } from "@tanstack/react-query";
 
 import Skeleton from "react-loading-skeleton";

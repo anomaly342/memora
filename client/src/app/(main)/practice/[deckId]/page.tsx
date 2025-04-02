@@ -183,18 +183,6 @@ export default function Practice() {
 		console.log(flashcards);
 	}, [flashcards, router, currentIndex, deck]);
 
-	const updateCardInDeck = (updatedCard: Flashcard) => {
-		setDeck((prevDeck) => {
-			if (!prevDeck) return null; // ถ้า prevDeck เป็น null ให้คืนค่า null ไปเลย
-			return {
-				...prevDeck, // สร้าง object ใหม่
-				cards: prevDeck.cards.map((card) =>
-					card.uuid === updatedCard.uuid ? updatedCard : card
-				),
-			};
-		});
-	};
-
 	const moveToNextCard = () => {
 		setCurrentIndex((prev) => {
 			const nextIndex = prev + 1;
